@@ -1,0 +1,29 @@
+"""
+Simple URL wordcloud generator (Usable in Jupyter Notebook)
+"""
+import requests
+from wordcloud import WordCloud 
+import matplotlib.pyplot as plt
+%matplotlib inline
+def wordcloudGen(link):
+    netinkami = ['var','target','column','if','cX','section','fab','bt','overflow','typeof','none','hidden','async','defer','return',
+                 'Gemius', 'SA', 'version','recommender','threshold','long','el','begin','base','catch','screen','tag','try','cookie',
+                 'itemscope','Flexiseq','div','function','new','ads','IE','END','news','gdpr','customize','googletag','solid','slapukai',
+                 'disabled','ul','medium','active','attribute','visual','front','in','else', 'ir','su']
+    duomenys = requests.get(link)
+    duomenys = duomenys.text
+    duom = duomenys.split()
+    duomenys_list = [x for x in duom if x.isalpha() and x not in netinkami ]
+    duomenys = ' '.join([str(x) for x in duomenys_list])
+    wordcloud = WordCloud(width=1000, height=1000, background_color='black', colormap='rainbow', collocations=False).generate(duomenys)
+    plt.figure(figsize=(15,15))
+    plt.imshow(wordcloud,interpolation='bilinear')
+    plt.axis('off')
+    plt.show()
+    """
+    Word count
+    unique = set(duomenys_list)
+    for item in unique:
+        if duomenys_list.count(item)>2:
+            print(f'Žodis {item} straipsnyje pasikartoja {duomenys_list.count(item)}')
+    """

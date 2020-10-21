@@ -1,0 +1,96 @@
+"""
+Concept of a robot with movement graph output (Usable in Jupyter Notebook)
+"""
+import pandas as pd
+import matplotlib.pyplot as plt
+%matplotlib inline
+class Robotas():
+    def __init__(self):
+        self.battery = 100
+        self.direction = 'N'
+        self.directions = ['N','E','S','W']
+        self.current_location=[0,0]
+        self.location_history= [[0,0]]
+    def charge(self):
+        if self.battery == 100:
+            return f'Already full'
+        self.battery = 100
+        return f'Charged'
+    def get_location(self):
+        return self.current_location
+    def change_direction(self, my_dir):
+        if my_dir == 'left':
+            if self.battery-10<0:
+                return f'Not enough charge'
+            self.battery-=10
+            for index in range(len(self.directions)):
+                if self.directions[index] == self.direction:
+                    if index-1 == len(self.directions):
+                        self.direction = self.directions[3]
+                    else:
+                        self.direction = self.directions[index-1]
+                    return f'Changed direction to {self.direction}'
+        elif my_dir == 'right': 
+            if self.battery-10<0:
+                return f'Not enough charge'
+            self.battery-=10
+            for index in range(len(self.directions)):
+                if self.directions[index] == self.direction:
+                    if index+1 == len(self.directions):
+                        self.direction = self.directions[0]
+                    else:
+                        self.direction = self.directions[index+1]
+                    return f'Changed direction to {self.direction}'
+        else:
+            return f'No such direction'
+    def get_direction(self):
+        return self.direction
+    def update_location_history(self):
+        self.location_history.append(list(self.current_location))
+    def get_battery_level(self):
+        return f'{self.battery}%'
+    def move(self,trajectory):
+        mover = {'N': self.N,
+                 'E': self.E,
+                 'S': self.S,
+                 'W': self.W}
+        if self.battery-20<0:
+            return f'Not enough charge'
+        self.battery-=20
+        mover[self.direction](trajectory)
+        self.update_location_history()
+        return f'Moving'
+    """
+    Cases for move function
+    """
+    def N(self,trajectory):
+        if trajectory == 'F':
+            self.current_location[1]+=1
+        elif trajectory == 'B':
+            self.current_location[1]-=1
+    def E(self,trajectory):
+        if trajectory == 'F':
+            self.current_location[0]+=1
+        elif trajectory == 'B':
+            self.current_location[0]-=1
+    def S(self,trajectory):
+        if trajectory == 'F':
+            self.current_location[1]-=1
+        elif trajectory == 'B':
+            self.current_location[1]+=1
+    def W(self,trajectory):
+        if trajectory == 'F':
+            self.current_location[0]-=1
+        elif trajectory == 'B':
+            self.current_location[0]+=1
+    """
+    -----------
+    """
+    def get_location_graf(self):
+        try:
+            df = pd.DataFrame(self.location_history,columns=['x','y'])
+            fig = plt.figure()
+            loc = fig.add_axes([0,0,1,1])
+            loc.plot(df['x'],df['y'], marker='o')
+        except:
+            return f'No location history'
